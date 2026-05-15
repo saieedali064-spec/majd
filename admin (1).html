@@ -827,9 +827,9 @@ function deleteProduct(id) {
 // ===== DRIVE LINK CONVERT =====
 function convertDriveLink(url) {
   const m1 = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (m1) return `https://drive.google.com/uc?export=view&id=${m1[1]}`;
+  if (m1) return `https://lh3.googleusercontent.com/d/${m1[1]}`;
   const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if (m2) return `https://drive.google.com/uc?export=view&id=${m2[1]}`;
+  if (m2) return `https://lh3.googleusercontent.com/d/${m2[1]}`;
   return url;
 }
 
