@@ -40,7 +40,6 @@ body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text);min
 .hero h1 { font-size:clamp(20px,5vw,30px); font-weight:900; color:var(--gold); margin-bottom:.4rem; animation:fadeDown .6s .1s ease both; }
 .hero p   { font-size:clamp(12px,3vw,14px); color:var(--muted); font-family:'Tajawal',sans-serif; animation:fadeDown .6s .2s ease both; }
 .hero-divider { width:60px; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:1.2rem auto 0; animation:fadeDown .6s .3s ease both; }
-
 @keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:none} }
 
 /* ===== STICKY FILTER BAR ===== */
@@ -82,7 +81,6 @@ body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text);min
 @keyframes cardIn { from{opacity:0;transform:translateY(16px)scale(.97)} to{opacity:1;transform:none} }
 .pcard:hover { transform:translateY(-5px); box-shadow:0 16px 48px rgba(201,169,110,.12); border-color:rgba(201,169,110,.22); }
 
-/* Image area */
 .img-wrap { position:relative; aspect-ratio:1; overflow:hidden; background:var(--dark3); }
 .img-wrap img { width:100%; height:100%; object-fit:cover; transition:transform .5s cubic-bezier(.34,1.56,.64,1); cursor:pointer; }
 .pcard:hover .img-wrap img { transform:scale(1.06); }
@@ -92,7 +90,6 @@ body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text);min
 .avail-badge.yes { background:rgba(10,30,18,.85); color:var(--green); border:1px solid rgba(77,200,122,.2); }
 .avail-badge.no  { background:rgba(30,10,10,.85); color:var(--red);   border:1px solid rgba(224,82,82,.2); }
 
-/* Card body */
 .cbody { padding:14px; }
 .ccat { font-size:9px; color:var(--gold); font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:4px; font-family:'Tajawal',sans-serif; }
 .cname { font-size:14px; font-weight:800; margin-bottom:5px; line-height:1.35; }
@@ -112,11 +109,27 @@ body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text);min
 }
 .wa-mini:hover { background:rgba(37,211,102,.18); }
 
+/* ===== LOADING SCREEN ===== */
+#loading-screen {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:60vh; gap:1rem;
+}
+.spinner { width:40px; height:40px; border:3px solid #222; border-top-color:var(--gold); border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.loading-txt { font-size:13px; color:var(--muted); font-family:'Tajawal',sans-serif; }
+
 /* ===== EMPTY ===== */
 .empty-state { text-align:center; padding:5rem 2rem; grid-column:1/-1; }
 .empty-state .ico { font-size:56px; margin-bottom:1rem; opacity:.4; }
 .empty-state h3 { font-size:15px; color:var(--muted); margin-bottom:6px; }
 .empty-state p  { font-size:12px; color:#333; font-family:'Tajawal',sans-serif; line-height:1.7; }
+
+/* ===== ERROR ===== */
+#error-screen { display:none; text-align:center; padding:5rem 2rem; }
+#error-screen .ico { font-size:56px; margin-bottom:1rem; opacity:.5; }
+#error-screen h2 { font-size:16px; color:var(--red); margin-bottom:.5rem; }
+#error-screen p { font-size:12px; color:var(--muted); font-family:'Tajawal',sans-serif; line-height:1.8; }
+.retry-btn { margin-top:1rem; padding:10px 24px; background:linear-gradient(135deg,var(--gold),var(--gold-d)); border:none; border-radius:10px; color:#0A0A0A; font-family:'Cairo',sans-serif; font-size:13px; font-weight:800; cursor:pointer; }
 
 /* ===== FOOTER ===== */
 .footer {
@@ -151,12 +164,6 @@ body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text);min
 .dot { width:7px; height:7px; border-radius:50%; background:#333; cursor:pointer; transition:background .2s; }
 .dot.on { background:var(--gold); }
 
-/* ===== NO DATA SCREEN ===== */
-#no-data { display:none; text-align:center; padding:6rem 2rem; }
-#no-data .ico { font-size:64px; margin-bottom:1.5rem; opacity:.3; }
-#no-data h2 { font-size:18px; color:var(--muted); margin-bottom:.5rem; }
-#no-data p  { font-size:13px; color:#333; font-family:'Tajawal',sans-serif; line-height:1.8; }
-
 @media(max-width:600px) {
   .grid { grid-template-columns:repeat(2,1fr); gap:10px; }
   .catalog-wrap { padding:.8rem 1rem 5rem; }
@@ -169,14 +176,14 @@ body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text);min
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-ico" id="hero-ico">🏠</div>
+  <div class="hero-ico">🏠</div>
   <h1 id="hero-company">كتالوج مجد الدبوس للتجارة العامة</h1>
   <p id="hero-tagline">مواد منزلية بجودة عالية · بغداد، العراق</p>
   <div class="hero-divider"></div>
 </div>
 
 <!-- FILTER BAR -->
-<div class="filter-bar">
+<div class="filter-bar" id="filter-bar" style="display:none">
   <input class="srch" id="srch" type="text" placeholder="🔍 ابحث عن منتج..." oninput="render()">
   <div class="cats-scroll" id="cats-scroll"></div>
 </div>
@@ -186,23 +193,23 @@ body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text);min
 
 <!-- CATALOG -->
 <div class="catalog-wrap" id="catalog-wrap">
-  <div class="grid" id="grid">
-    <div class="empty-state">
-      <div class="ico">⏳</div>
-      <h3>جاري تحميل الكتالوج...</h3>
-    </div>
+  <div id="loading-screen">
+    <div class="spinner"></div>
+    <div class="loading-txt">جاري تحميل الكتالوج...</div>
   </div>
+  <div class="grid" id="grid" style="display:none"></div>
 </div>
 
-<!-- NO DATA -->
-<div id="no-data">
-  <div class="ico">📦</div>
-  <h2>الكتالوج فارغ حالياً</h2>
-  <p>يتم العمل على إضافة المنتجات<br>تواصل معنا مباشرة للاستفسار</p>
+<!-- ERROR -->
+<div id="error-screen">
+  <div class="ico">⚠️</div>
+  <h2>تعذّر تحميل الكتالوج</h2>
+  <p>تأكد من اتصالك بالإنترنت<br>أو أن Google Sheet مشارك بشكل صحيح</p>
+  <button class="retry-btn" onclick="loadFromSheet()">🔄 إعادة المحاولة</button>
 </div>
 
 <!-- FOOTER -->
-<footer class="footer" id="footer">
+<footer class="footer">
   <strong id="footer-company">مجد الدبوس للتجارة العامة</strong><br>
   <span id="footer-city">بغداد، العراق</span> · جميع الحقوق محفوظة
 </footer>
@@ -217,7 +224,7 @@ body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text);min
   <button class="lb-x" onclick="closeLb()">✕</button>
   <img class="lb-img" id="lb-img" src="" alt="">
   <div class="lb-info" id="lb-info"></div>
-  <div class="lb-nav">
+  <div class="lb-nav" id="lb-nav">
     <button class="lb-btn" onclick="lbMv(-1)">→</button>
     <div class="lb-dots" id="lb-dots"></div>
     <button class="lb-btn" onclick="lbMv(1)">←</button>
@@ -225,78 +232,137 @@ body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text);min
 </div>
 
 <script>
-// ===== LOAD SHARED DATA =====
-// Catalog reads from the same localStorage key that admin.html writes to
-const STORE_KEY = 'majd_v2';
+// ====================================================
+//  الإعدادات — عدّل هذه القيم فقط
+// ====================================================
+const CONFIG = {
+  sheetId:  '1-GPXzsnOdijTlM3eD5EQ3TifPVUmgKz-rngYrxfLORU',  // Sheet ID
+  waNum:    '9647732395684',
+  company:  'مجد الدبوس للتجارة العامة',
+  city:     'بغداد، العراق',
+  tagline:  'مواد منزلية بجودة عالية',
+  showPrice:   true,   // عرض الأسعار
+  showPkg:     true,   // عرض التعبئة
+  showMoq:     false,  // عرض الحد الأدنى
+  showUnavail: false,  // عرض المنتجات غير المتوفرة
+  showWa:      true,   // زر واتساب
+};
+// ====================================================
 
-function getStore() {
-  const raw = localStorage.getItem(STORE_KEY);
-  if (!raw) return null;
-  return JSON.parse(raw);
+// --- الإعدادات تُقرأ أيضاً من localStorage إذا عدّلها الأدمن ---
+function mergeSettings() {
+  try {
+    const raw = localStorage.getItem('majd_v2');
+    if (!raw) return;
+    const store = JSON.parse(raw);
+    const s = store.settings || {};
+    if (store.sheetId)      CONFIG.sheetId      = store.sheetId;
+    if (s.waNum)            CONFIG.waNum        = s.waNum;
+    if (s.company)          CONFIG.company      = s.company;
+    if (s.city)             CONFIG.city         = s.city;
+    if (s.tagline)          CONFIG.tagline      = s.tagline;
+    if (s.price  !== undefined) CONFIG.showPrice   = s.price;
+    if (s.pkg    !== undefined) CONFIG.showPkg     = s.pkg;
+    if (s.moq    !== undefined) CONFIG.showMoq     = s.moq;
+    if (s.unavail!== undefined) CONFIG.showUnavail = s.unavail;
+    if (s.wa     !== undefined) CONFIG.showWa      = s.wa;
+  } catch(e) {}
 }
 
-let store = null;
+// ====================================================
+let products = [];
 let activeCat = 'all';
 let lbImgs = [], lbIdx = 0, lbName = '';
 
-// ===== INIT =====
-window.addEventListener('load', () => {
-  store = getStore();
-  if (!store || !store.products?.length) {
-    document.getElementById('no-data').style.display = 'block';
-    document.getElementById('catalog-wrap').style.display = 'none';
-    document.getElementById('filter-bar')?.remove();
-    return;
-  }
-  applyBranding();
-  render();
-});
+// تحويل رابط Google Drive
+function convertDriveLink(url) {
+  if (!url) return '';
+  url = url.trim();
+  const m1 = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (m1) return `https://lh3.googleusercontent.com/d/${m1[1]}`;
+  const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (m2) return `https://lh3.googleusercontent.com/d/${m2[1]}`;
+  return url;
+}
 
-// ===== BRANDING =====
-function applyBranding() {
-  const s = store.settings || {};
-  const company = s.company || 'مجد الدبوس للتجارة العامة';
-  const city    = s.city    || 'بغداد، العراق';
-  const tagline = s.tagline || 'مواد منزلية بجودة عالية';
-  const waNum   = s.waNum   || '9647732395684';
+// ====================================================
+//  تحميل البيانات من Google Sheets
+// ====================================================
+async function loadFromSheet() {
+  showLoading(true);
+  hideError();
 
-  document.title = `كتالوج — ${company}`;
-  document.getElementById('hero-company').textContent = `كتالوج ${company}`;
-  document.getElementById('hero-tagline').textContent = `${tagline} · ${city}`;
-  document.getElementById('footer-company').textContent = company;
-  document.getElementById('footer-city').textContent = city;
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${CONFIG.sheetId}/gviz/tq?tqx=out:json&t=${Date.now()}`;
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error('fetch failed');
+    const text = await res.text();
+    const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
 
-  // WhatsApp
-  const fab = document.getElementById('wa-fab');
-  if (s.wa !== false) {
-    fab.href = `https://wa.me/${waNum}`;
-    fab.style.display = 'flex';
+    const rows = json.table?.rows;
+    const cols = (json.table?.cols || []).map(c => c.label.toLowerCase().trim());
+
+    if (!rows?.length) throw new Error('empty sheet');
+
+    const get = (row, k) => {
+      const i = cols.indexOf(k);
+      return (i !== -1 && row.c[i]) ? String(row.c[i].v || '').trim() : '';
+    };
+
+    products = rows.map((row, idx) => {
+      const images = [];
+      for (let n = 1; n <= 5; n++) {
+        const img = get(row, 'image' + n);
+        if (img) images.push(convertDriveLink(img));
+      }
+      return {
+        id:        idx,
+        sku:       get(row, 'sku')      || 'PRD-' + (idx + 1),
+        name:      get(row, 'name'),
+        category:  get(row, 'category') || 'عام',
+        desc:      get(row, 'desc'),
+        price:     get(row, 'price'),
+        available: get(row, 'available') === 'no' ? 'no' : 'yes',
+        pkg:       get(row, 'pkg'),
+        perbox:    get(row, 'perbox'),
+        moq:       get(row, 'moq'),
+        images
+      };
+    }).filter(p => p.name);
+
+    showLoading(false);
+    document.getElementById('filter-bar').style.display = 'flex';
+    document.getElementById('grid').style.display = 'grid';
+    render();
+
+  } catch(e) {
+    console.error(e);
+    showLoading(false);
+    showError();
   }
 }
 
-// ===== CATEGORIES =====
-function getCats() { return [...new Set(store.products.filter(p => p.available === 'yes' || store.settings?.unavail).map(p => p.category).filter(Boolean))]; }
-
-function renderCats() {
-  const cats = getCats();
-  const el = document.getElementById('cats-scroll');
-  el.innerHTML = ['all', ...cats].map(c =>
-    `<button class="fbtn ${activeCat===c?'on':''}" onclick="setCat('${c}')">${c==='all'?'🗂️ الكل':c}</button>`
-  ).join('');
+function showLoading(v) {
+  document.getElementById('loading-screen').style.display = v ? 'flex' : 'none';
+}
+function showError() {
+  document.getElementById('error-screen').style.display = 'block';
+}
+function hideError() {
+  document.getElementById('error-screen').style.display = 'none';
 }
 
-function setCat(c) { activeCat = c; render(); }
-
-// ===== RENDER =====
+// ====================================================
+//  العرض
+// ====================================================
 function render() {
-  const s    = store.settings || {};
-  const q    = (document.getElementById('srch')?.value || '').toLowerCase();
-  const showUnavail = !!s.unavail;
-
-  let list = store.products.filter(p => {
-    if (!showUnavail && p.available === 'no') return false;
+  const q = (document.getElementById('srch')?.value || '').toLowerCase();
+  let list = products.filter(p => {
+    if (!CONFIG.showUnavail && p.available === 'no') return false;
     if (activeCat !== 'all' && p.category !== activeCat) return false;
-    if (q && !p.name.toLowerCase().includes(q) && !(p.sku||'').toLowerCase().includes(q) && !(p.desc||'').toLowerCase().includes(q)) return false;
+    if (q && !p.name.toLowerCase().includes(q) &&
+        !(p.sku||'').toLowerCase().includes(q) &&
+        !(p.desc||'').toLowerCase().includes(q)) return false;
     return true;
   });
 
@@ -310,35 +376,52 @@ function render() {
     grid.innerHTML = `<div class="empty-state"><div class="ico">🔍</div><h3>لا توجد نتائج</h3><p>جرب كلمة بحث مختلفة</p></div>`;
     return;
   }
-
-  grid.innerHTML = list.map((p, i) => buildCard(p, s, i)).join('');
+  grid.innerHTML = list.map((p, i) => buildCard(p, i)).join('');
 }
 
-// ===== BUILD CARD =====
-function buildCard(p, s, idx) {
+function renderCats() {
+  const cats = [...new Set(
+    products
+      .filter(p => CONFIG.showUnavail || p.available === 'yes')
+      .map(p => p.category)
+      .filter(Boolean)
+  )];
+  const el = document.getElementById('cats-scroll');
+  el.innerHTML = ['all', ...cats].map(c =>
+    `<button class="fbtn ${activeCat === c ? 'on' : ''}" onclick="setCat('${c}')">${c === 'all' ? '🗂️ الكل' : c}</button>`
+  ).join('');
+}
+
+function setCat(c) { activeCat = c; render(); }
+
+// ====================================================
+//  بناء البطاقة
+// ====================================================
+function buildCard(p, idx) {
   const img = p.images?.[0];
   const imgHtml = img
-    ? `<img src="${img}" alt="${p.name}" onclick="openLb(${p.id})" loading="${idx < 4 ? 'eager' : 'lazy'}" onerror="this.style.display='none';this.nextElementSibling?.remove();this.parentElement.innerHTML+='<div class=\\'no-img\\'>🏠</div>'">`
+    ? `<img src="${img}" alt="${p.name}" onclick="openLb(${p.id})" loading="${idx < 4 ? 'eager' : 'lazy'}" onerror="imgErr(this)">`
     : `<div class="no-img">🏠</div>`;
   const multiHtml = p.images?.length > 1 ? `<span class="multi-badge">📸 ${p.images.length}</span>` : '';
 
   let chips = '';
-  if (s.pkg && p.pkg) chips += `<span class="chip chip-pkg">📦 ${p.pkg}${p.perbox?' · '+p.perbox+' قطعة':''}</span>`;
-  if (s.moq && p.moq) chips += `<span class="chip chip-moq">🔢 الحد الأدنى: ${p.moq}</span>`;
+  if (CONFIG.showPkg && p.pkg)
+    chips += `<span class="chip chip-pkg">📦 ${p.pkg}${p.perbox ? ' · ' + p.perbox + ' قطعة' : ''}</span>`;
+  if (CONFIG.showMoq && p.moq)
+    chips += `<span class="chip chip-moq">🔢 الحد الأدنى: ${p.moq}</span>`;
 
-  const waNum = s.waNum || '9647732395684';
-  const waMsg = encodeURIComponent(`مرحباً، أريد الاستفسار عن: ${p.name} (${p.sku})`);
-  const waLink = `https://wa.me/${waNum}?text=${waMsg}`;
+  const waMsg  = encodeURIComponent(`مرحباً، أريد الاستفسار عن: ${p.name} (${p.sku})`);
+  const waLink = `https://wa.me/${CONFIG.waNum}?text=${waMsg}`;
 
-  const priceHtml = s.price !== false
+  const priceHtml = CONFIG.showPrice
     ? `<div class="cprice">${p.price ? Number(p.price).toLocaleString('ar-IQ') + ' <span style="font-size:12px;font-weight:500">د.ع</span>' : 'السعر عند الطلب'}</div>`
     : `<div class="cprice hidden">📞 للسعر تواصل معنا</div>`;
 
   return `
-  <div class="pcard" style="animation-delay:${idx*0.04}s">
+  <div class="pcard" style="animation-delay:${idx * 0.04}s">
     <div class="img-wrap">
       ${imgHtml}${multiHtml}
-      <span class="avail-badge ${p.available}">${p.available==='yes'?'✅ متوفر':'❌ غير متوفر'}</span>
+      <span class="avail-badge ${p.available}">${p.available === 'yes' ? '✅ متوفر' : '❌ غير متوفر'}</span>
     </div>
     <div class="cbody">
       <div class="ccat">${p.category}</div>
@@ -353,33 +436,66 @@ function buildCard(p, s, idx) {
   </div>`;
 }
 
-// ===== LIGHTBOX =====
+function imgErr(el) {
+  el.style.display = 'none';
+  const wrap = el.closest('.img-wrap');
+  if (wrap && !wrap.querySelector('.no-img')) {
+    const d = document.createElement('div');
+    d.className = 'no-img';
+    d.textContent = '🏠';
+    wrap.appendChild(d);
+  }
+}
+
+// ====================================================
+//  LIGHTBOX
+// ====================================================
 function openLb(id) {
-  const p = store.products.find(x => x.id === id);
+  const p = products.find(x => x.id === id);
   if (!p?.images?.length) return;
   lbImgs = p.images; lbIdx = 0; lbName = p.name;
   updLb();
   document.getElementById('lb').classList.add('open');
 }
 function updLb() {
-  document.getElementById('lb-img').src  = lbImgs[lbIdx];
-  document.getElementById('lb-info').textContent = `${lbName} · ${lbIdx+1} / ${lbImgs.length}`;
-  document.getElementById('lb-dots').innerHTML = lbImgs.map((_,i) =>
-    `<div class="dot ${i===lbIdx?'on':''}" onclick="lbGo(${i})"></div>`
+  document.getElementById('lb-img').src = lbImgs[lbIdx];
+  document.getElementById('lb-info').textContent = `${lbName} · ${lbIdx + 1} / ${lbImgs.length}`;
+  document.getElementById('lb-dots').innerHTML = lbImgs.map((_, i) =>
+    `<div class="dot ${i === lbIdx ? 'on' : ''}" onclick="lbGo(${i})"></div>`
   ).join('');
   document.getElementById('lb-nav').style.display = lbImgs.length > 1 ? 'flex' : 'none';
 }
-function lbMv(d) { lbIdx = (lbIdx+d+lbImgs.length)%lbImgs.length; updLb(); }
+function lbMv(d) { lbIdx = (lbIdx + d + lbImgs.length) % lbImgs.length; updLb(); }
 function lbGo(i) { lbIdx = i; updLb(); }
 function closeLb() { document.getElementById('lb').classList.remove('open'); }
-document.getElementById('lb').addEventListener('click', e => { if(e.target===e.currentTarget) closeLb(); });
-
-// Keyboard
+document.getElementById('lb').addEventListener('click', e => { if (e.target === e.currentTarget) closeLb(); });
 document.addEventListener('keydown', e => {
   if (!document.getElementById('lb').classList.contains('open')) return;
-  if (e.key === 'ArrowRight' || e.key === 'ArrowUp')   lbMv(-1);
-  if (e.key === 'ArrowLeft'  || e.key === 'ArrowDown')  lbMv(1);
+  if (e.key === 'ArrowRight' || e.key === 'ArrowUp')  lbMv(-1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowDown') lbMv(1);
   if (e.key === 'Escape') closeLb();
+});
+
+// ====================================================
+//  INIT
+// ====================================================
+window.addEventListener('load', () => {
+  mergeSettings();
+
+  // تطبيق البراندينج
+  document.title = `كتالوج — ${CONFIG.company}`;
+  document.getElementById('hero-company').textContent  = `كتالوج ${CONFIG.company}`;
+  document.getElementById('hero-tagline').textContent  = `${CONFIG.tagline} · ${CONFIG.city}`;
+  document.getElementById('footer-company').textContent = CONFIG.company;
+  document.getElementById('footer-city').textContent   = CONFIG.city;
+
+  if (CONFIG.showWa) {
+    const fab = document.getElementById('wa-fab');
+    fab.href = `https://wa.me/${CONFIG.waNum}`;
+    fab.style.display = 'flex';
+  }
+
+  loadFromSheet();
 });
 </script>
 </body>
