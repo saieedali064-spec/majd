@@ -386,7 +386,8 @@ function mergeSettings() {
     if (s.price   !== undefined) CONFIG.showPrice  = s.price;
     if (s.pkg     !== undefined) CONFIG.showPkg    = s.pkg;
     if (s.moq     !== undefined) CONFIG.showMoq    = s.moq;
-    if (s.unavail !== undefined) CONFIG.showUnavail= s.unavail;
+    // showUnavail دايماً true — نعرض كل المنتجات ونمييز غير المتوفر بصرياً
+    // if (s.unavail !== undefined) CONFIG.showUnavail= s.unavail;
     if (s.wa      !== undefined) CONFIG.showWa     = s.wa;
   } catch(e) {}
 }
