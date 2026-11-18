@@ -81,7 +81,33 @@ button,input{font-family:inherit}
 .cs .rw{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);padding:3px 0}.cs .rw.t{font-size:15px;font-weight:900;color:var(--gd);border-top:1px solid var(--line);margin-top:6px;padding-top:8px}
 .cs .btn{width:100%;margin-top:10px;display:block}
 .toast{position:fixed;bottom:90px;right:50%;transform:translateX(50%);background:#fff;border:1px solid rgba(176,137,68,.4);padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(60,45,20,.2);z-index:400}
+.bd.nw{bottom:8px;left:8px;background:var(--gold);color:#fff}.grid.list{grid-template-columns:1fr}.grid.list .pc{display:flex}.grid.list .iw{width:130px;aspect-ratio:1;flex-shrink:0}.grid.list .cb{flex:1}
 @media(max-width:600px){.grid{grid-template-columns:repeat(2,1fr);gap:10px}.wrap{padding:.8rem 1rem 8rem}.bar{padding:8px 1rem}.cf{grid-template-columns:1fr}}
+
+#proot{display:none}
+#proot,#proot *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pg{width:210mm;height:296mm;position:relative;overflow:hidden;break-after:page;page-break-after:always;background:#FAF7F0;padding:13mm 12mm 18mm;font-family:'Cairo',sans-serif;color:#2B2418}
+.pg:last-child{break-after:auto;page-break-after:auto}
+.cv{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(#FFF9EC,#F3EEE3)}
+.cv:before{content:'';position:absolute;inset:8mm;border:1.2mm double #B08944;border-radius:4mm}
+.cv img{width:48mm;height:48mm;object-fit:contain;margin-bottom:10mm}
+.cv h1{font-size:34pt;font-weight:900;color:#8A6A32;margin-bottom:3mm}.cv h2{font-size:17pt;font-weight:700;margin-bottom:12mm}
+.cv .ln{width:40mm;height:1mm;background:#B08944;margin:0 auto 12mm}.cv p{font-size:12pt;color:#6B604D;line-height:2}
+.cv .co{font-size:15pt;font-weight:800;color:#2B2418}
+.ph{display:flex;justify-content:space-between;align-items:center;border-bottom:.8mm solid #B08944;padding-bottom:4mm;margin-bottom:6mm}
+.ph b{font-size:15pt;color:#8A6A32;font-weight:900}.ph span{font-size:10pt;color:#6B604D}
+.pgg{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm}
+.pp{background:#fff;border:.3mm solid #E6DDCB;border-radius:3mm;overflow:hidden;height:75mm}
+.pi{height:42mm;background:#F3EEE3;display:flex;align-items:center;justify-content:center;font-size:30pt;position:relative;overflow:hidden}
+.pi img{width:100%;height:100%;object-fit:cover}
+.pi .so{position:absolute;inset:0;background:rgba(255,255,255,.78);color:#D14343;display:flex;align-items:center;justify-content:center;font-size:13pt}
+.pi .nw{position:absolute;top:2mm;left:2mm;background:#B08944;color:#fff;font-size:7pt;padding:.6mm 2.5mm;border-radius:5mm}
+.pt{padding:2.5mm 3mm}.pn{font-size:9.5pt;font-weight:800;line-height:1.35;height:12.5mm;overflow:hidden}
+.pk{font-size:7pt;color:#A89C84}.pu{font-size:7.5pt;color:#6B604D;margin-top:.5mm}
+.pr2{font-size:10pt;font-weight:900;color:#8A6A32;margin-top:1mm}.pr3{font-size:7pt;color:#8A7F6C}
+.pf{position:absolute;bottom:7mm;left:12mm;right:12mm;display:flex;justify-content:space-between;font-size:8pt;color:#8A7F6C;border-top:.3mm solid #E6DDCB;padding-top:2mm}
+.ix{display:flex;align-items:baseline;gap:3mm;font-size:12pt;padding:2.5mm 0}.ix i{flex:1;border-bottom:.3mm dotted #B5AA94}.ix small{color:#8A7F6C}.ix b{color:#8A6A32}
+@media print{@page{size:A4;margin:0}html,body{background:#fff!important}body>*:not(#proot){display:none!important}#proot{display:block!important}}
 </style>
 </head>
 <body>
@@ -91,7 +117,7 @@ button,input{font-family:inherit}
   <select class="sel" id="so" onchange="render()">
     <option value="d">الترتيب: افتراضي</option><option value="a">أ - ي</option><option value="z">ي - أ</option><option value="l">السعر: الأقل</option><option value="h">السعر: الأعلى</option>
   </select>
-  <button class="fb" onclick="oa=!oa;this.classList.toggle('on',oa);render()">✅ المتوفر فقط</button>
+  <button class="fb on" id="oa1" onclick="setOa(true)">✅ المتوفر فقط</button><button class="fb" id="oa0" onclick="setOa(false)">📋 الكل (مع غير المتوفر)</button><button class="fb" onclick="openPdf()">📄 كتالوج PDF</button><button class="fb" id="vw" onclick="toggleView()">☰ قائمة</button>
   <div class="cats" id="cats"></div>
 </div>
 <div class="info" id="info"></div>
@@ -100,6 +126,13 @@ button,input{font-family:inherit}
 <a class="wa" id="wa" target="_blank" style="display:none">📲 تواصل معنا</a>
 <button class="fab" id="fab" onclick="openCart()">🛒 قائمة طلبي <span id="fb">0</span></button>
 
+<div class="ov" id="pov" onclick="if(event.target===this)closePov()"><div class="md" style="max-width:440px"><button class="x" onclick="closePov()">✕</button><div class="mb">
+<div class="mn">📄 إنشاء كتالوج PDF</div><div class="ms">اختر محتوى الكتالوج</div>
+<div class="qr"><span>المحتوى</span><select class="sel" id="psc"></select></div>
+<label class="qr"><span>إظهار الأسعار</span><input type="checkbox" id="ppr" checked></label>
+<label class="qr"><span>تضمين المنتجات غير المتوفرة</span><input type="checkbox" id="pun"></label>
+<div class="ms" style="line-height:1.7">ستظهر نافذة الطباعة بعد التجهيز، اختر منها «حفظ كـ PDF» (الوجهة) والحجم A4، وفعّل «الرسومات الخلفية» إن وُجدت.</div>
+<button class="btn g" style="width:100%;margin-top:6px" id="pgo" onclick="makePdf()">إنشاء الكتالوج</button></div></div></div>
 <div class="ov" id="mov" onclick="if(event.target===this)closeM()"><div class="md" id="md"></div></div>
 <div class="ov" id="cov" onclick="if(event.target===this)closeCart()" style="padding:0">
   <div class="cp">
@@ -114,7 +147,7 @@ button,input{font-family:inherit}
 const C={sheetId:'1-GPXzsnOdijTlM3eD5EQ3TifPVUmgKz-rngYrxfLORU',wa:'9647892922002',company:'شركة مجد الدبوس للتجارة العامة',city:'بغداد-الوزيرية الصناعية-عمارة الزيتون2',tag:'لتجارة المواد المنزلية',logo:'logo.png',price:true,unavail:true,showWa:true,DOZ:12};
 try{const s=JSON.parse(localStorage.getItem('majd_v2')||'{}'),t=s.settings||{};if(s.sheetId)C.sheetId=s.sheetId;if(t.waNum)C.wa=t.waNum;if(t.company)C.company=t.company;if(t.city)C.city=t.city;if(t.tagline)C.tag=t.tagline;if(t.logo)C.logo=t.logo;if(t.price!==undefined)C.price=t.price;if(t.wa!==undefined)C.showWa=t.wa}catch(e){}
 
-let oa=false,P=[],cat='all',cur=null,mq=1,gi=0,cart={};
+let oa=true,P=[],cat='all',cur=null,mq=1,gi=0,cart={};
 const $=id=>document.getElementById(id),n=v=>Number(v).toLocaleString('ar-IQ');
 const nz=s=>String(s).toLowerCase().replace(/[\u064B-\u0652\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -139,7 +172,7 @@ async function load(){
     const cols=(j.table.cols||[]).map(c=>c.label.toLowerCase().trim()),rows=j.table.rows;if(!rows?.length)throw 0;
     const g=(row,k)=>{const i=cols.indexOf(k);return i>-1&&row.c[i]?String(row.c[i].v||'').trim():''};
     P=rows.map((row,i)=>{const im=[];for(let k=1;k<=5;k++){const v=g(row,'image'+k);if(v)im.push(img(v))}
-      return{id:i,sku:g(row,'sku')||'PRD-'+(i+1),name:g(row,'name'),category:g(row,'category')||'عام',desc:g(row,'desc'),price:g(row,'price'),available:avail(g(row,'available')),pkg:g(row,'pkg'),perbox:g(row,'perbox'),images:im}}).filter(p=>p.name);
+      return{id:i,sku:g(row,'sku')||'PRD-'+(i+1),name:g(row,'name'),category:g(row,'category')||'عام',desc:g(row,'desc'),price:g(row,'price'),available:avail(g(row,'available')),badge:g(row,'badge'),pkg:g(row,'pkg'),perbox:g(row,'perbox'),images:im}}).filter(p=>p.name);
     try{const sv=JSON.parse(localStorage.getItem('majd_cart')||'{}');P.forEach(p=>{if(sv[p.sku]&&p.available==='yes')cart[p.id]=sv[p.sku]})}catch(e){}
     $('sp').style.display='none';$('bar').style.display='flex';sync();openFromHash();
   }catch(e){$('sp').style.display='none';$('grid').innerHTML='<div class="empty">⚠️ تعذّر تحميل الكتالوج<br>تأكد من الإنترنت أو مشاركة Google Sheet<br><br><button class="btn g" onclick="location.reload()">🔄 إعادة المحاولة</button></div>'}
@@ -153,7 +186,7 @@ function render(){
   if(so==='z')L.sort((a,b)=>b.name.localeCompare(a.name,'ar'));
   if(so==='l')L.sort((a,b)=>pn(a)-pn(b));
   if(so==='h')L.sort((a,b)=>pn(b)-pn(a));
-  $('cats').innerHTML=['all',...new Set(P.map(p=>p.category))].map(c=>`<button class="fb${c===cat?' on':''}" onclick="cat=this.dataset.c;render()" data-c="${esc(c)}">${c==='all'?'🗂️ الكل':esc(c)}</button>`).join('');
+  $('cats').innerHTML=['all',...new Set(P.map(p=>p.category))].map(c=>`<button class="fb${c===cat?' on':''}" onclick="cat=this.dataset.c;render()" data-c="${esc(c)}">${c==='all'?'🗂️ كل التصنيفات':esc(c)}</button>`).join('');
   $('info').textContent=L.length?`${L.length} منتج`:'';
   $('grid').innerHTML=L.length?L.map(card).join(''):'<div class="empty">🔍<br>لا توجد نتائج</div>';
 }
@@ -171,7 +204,7 @@ function card(p){
   const ok=p.available==='yes',q=cart[p.id]||0,u=unit(p);
   return`<div class="pc${ok?'':' no'}${q?' in':''}" onclick="openM(${p.id})">
   <div class="iw">${p.images[0]?`<img src="${esc(p.images[0])}" alt="${esc(p.name)}" loading="lazy" onerror="this.outerHTML='<div class=ni>🏠</div>'">`:'<div class="ni">🏠</div>'}
-    <span class="bd av${ok?'':' x'}">${ok?'✅ متوفر':'❌ نفذت'}</span><span class="bd un">${u.i} ${u.s}</span>${q?`<span class="bd ct">${q}</span>`:''}</div>
+    <span class="bd av${ok?'':' x'}">${ok?'✅ متوفر':'❌ نفذت'}</span><span class="bd un">${u.i} ${u.s}</span>${p.badge?`<span class="bd nw">${esc(p.badge)}</span>`:''}${q?`<span class="bd ct">${q}</span>`:''}</div>
   <div class="cb"><div class="cc">${esc(p.category)}</div><div class="cn">${esc(p.name)}</div>${p.desc?`<div class="cd">${esc(p.desc)}</div>`:''}${priceHtml(p,u)}
   ${!ok?'<button class="ab" disabled>⛔ غير متاح</button>':q?`<button class="ab in" onclick="event.stopPropagation();openCart()">✅ ${q} ${u.s}</button>`:`<button class="ab" onclick="event.stopPropagation();add(${p.id},1);toast('✅ تمت الإضافة إلى قائمتك')">＋ أضف للقائمة</button>`}</div></div>`;
 }
@@ -243,8 +276,38 @@ function mBody(){
 
 const hs=h=>{try{history.replaceState(null,'',h)}catch(e){}};
 const link=p=>location.href.split('#')[0]+'#'+encodeURIComponent(p.sku);
+function setOa(v){oa=v;$('oa1').classList.toggle('on',v);$('oa0').classList.toggle('on',!v);render()}
+function toggleView(){const g=$('grid');g.classList.toggle('list');$('vw').textContent=g.classList.contains('list')?'▦ شبكة':'☰ قائمة'}
 function share(){const l=link(cur);(navigator.clipboard?navigator.clipboard.writeText(l):Promise.reject()).then(()=>toast('🔗 تم نسخ رابط المنتج')).catch(()=>prompt('انسخ الرابط:',l))}
 function openFromHash(){const h=decodeURIComponent(location.hash.slice(1)),p=P.find(x=>x.sku===h);if(p)openM(p.id)}
+function openPdf(){$('psc').innerHTML='<option value="all">جميع المنتجات (كل التصنيفات)</option>'+[...new Set(P.map(p=>p.category))].map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');$('ppr').checked=C.price;$('pov').classList.add('o')}
+function closePov(){$('pov').classList.remove('o')}
+async function makePdf(){
+  const sc=$('psc').value,pr=$('ppr').checked,un=$('pun').checked;
+  const L=P.filter(p=>(sc==='all'||p.category===sc)&&(un||p.available==='yes'));
+  if(!L.length){toast('لا توجد منتجات بهذا الاختيار');return}
+  const cats=[...new Set(L.map(p=>p.category))],hasIx=cats.length>1,per=9,pages=[],ix=[];let pn=hasIx?3:2;
+  cats.forEach(c=>{const it=L.filter(p=>p.category===c);ix.push([c,it.length,pn]);for(let i=0;i<it.length;i+=per)pages.push({c,it:it.slice(i,i+per),n:pn++})});
+  const tel='+'+C.wa,foot=n_=>`<div class="pf"><span>${esc(C.company)} · ${tel}</span><span>${n_}</span></div>`;
+  const logo=C.logo?`<img src="${esc(img(C.logo))}" alt="" onerror="this.remove()">`:'';
+  const card=p=>{const u=unit(p),x=up(p);
+    const main=p.price?(u.t==='p'?n(p.price)+' د.ع / قطعة':(x?n(x)+' د.ع / '+u.s:n(p.price)+' د.ع / قطعة')):'السعر عند الطلب';
+    return`<div class="pp"><div class="pi">${p.images[0]?`<img src="${esc(p.images[0])}" alt="" onerror="this.remove()">`:'🏠'}${p.available!=='yes'?'<div class="so">نفذت الكمية</div>':''}${p.badge?`<span class="nw">${esc(p.badge)}</span>`:''}</div>
+    <div class="pt"><div class="pn">${esc(p.name)}</div><div class="pk"># ${esc(p.sku)}</div><div class="pu">${u.i} ${u.l}</div>
+    ${pr?`<div class="pr2">${main}</div>${p.price&&u.t!=='p'?`<div class="pr3">سعر القطعة: ${n(p.price)} د.ع</div>`:''}`:''}</div></div>`};
+  const date=new Date().toLocaleDateString('ar-IQ',{year:'numeric',month:'long'});
+  let h=`<div class="pg cv">${logo}<h1>كتالوج المنتجات</h1><h2>${sc==='all'?'جميع المنتجات':esc(sc)}</h2><div class="ln"></div>
+  <p class="co">${esc(C.company)}</p><p>${esc(C.tag)}<br>${esc(C.city)}<br>📞 ${tel}</p><p style="margin-top:8mm;font-size:10pt">${date} · ${L.length} منتج</p></div>`;
+  if(hasIx)h+=`<div class="pg"><div class="ph"><b>الفهرس</b><span>${esc(C.company)}</span></div>${ix.map(r=>`<div class="ix"><b>${esc(r[0])}</b><small>(${r[1]})</small><i></i><span>${r[2]}</span></div>`).join('')}${foot(2)}</div>`;
+  pages.forEach(g=>{h+=`<div class="pg"><div class="ph"><b>${esc(g.c)}</b><span>${esc(C.company)}</span></div><div class="pgg">${g.it.map(card).join('')}</div>${foot(g.n)}</div>`});
+  document.getElementById('proot')?.remove();
+  const root=document.createElement('div');root.id='proot';root.innerHTML=h;document.body.appendChild(root);
+  const b=$('pgo');b.disabled=true;b.textContent='⏳ جاري تجهيز الصور...';
+  await Promise.all([...root.querySelectorAll('img')].map(im=>im.complete?1:new Promise(r=>{im.onload=im.onerror=r;setTimeout(r,10000)})));
+  b.disabled=false;b.textContent='إنشاء الكتالوج';closePov();
+  window.onafterprint=()=>document.getElementById('proot')?.remove();
+  setTimeout(()=>window.print(),300);
+}
 let tt;function toast(m){const o=document.querySelector('.toast');if(o)o.remove();const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);clearTimeout(tt);tt=setTimeout(()=>t.remove(),2200)}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeM();closeCart()}});
 
